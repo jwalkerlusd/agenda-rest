@@ -63,9 +63,13 @@ if (https_options.pfx && https_options.passphrase) {
 }
 
 async function graceful() {
-  console.log("\nClosing server...");
+  console.log("\nClosing HTTP server...");
   await http_server.close();
-  console.log("Shutting down gracefully...");
+  if(https_server) {
+    console.log("\nClosing HTTPS server...");
+    await https_server.close();  
+  }
+  console.log("Shutting down Agenda instance gracefully...");
   await agenda.stop();
   process.exit(0);
 }
