@@ -6,8 +6,7 @@
   "jsnext:main": "./src/index.js",
   "scripts": {
     "build": "cp -R ./src/ ./dist && cp ./test.js ./dist/",
-    "test": "ava ./dist/test.js && npm run format",
-    "start": "npm run dev && node cli.js",
+    "start": "npm run build && node cli.js",
     "prepare": "npm run build"
   },
   "repository": {
@@ -38,25 +37,14 @@
     "url": "https://github.com/agenda/agenda-rest/issues"
   },
   "homepage": "https://github.com/agenda/agenda-rest#README",
-  "devDependencies": {
-    "ava": "=2.4.0",
-    "eslint": "7.32.0",
-    "prettier": "2.3.2",
-    "prettier-eslint": "13.0.0",
-    "prettier-eslint-cli": "5.0.1",
-    "supertest": "6.1.4"
-  },
   "dependencies": {
     "agenda": "^4.0.0",
-    "async-counter": "^1.1.0",
     "commander": "^8.0.0",
     "koa": "^2.10.0",
     "koa-bodyparser": "^4.2.1",
     "koa-logger": "^3.2.1",
     "koa-router": "^10.0.0",
     "pythonic": "^2.0.3",
-    "regenerator-runtime": "^0.13.3",
-    "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
   "engines": {
