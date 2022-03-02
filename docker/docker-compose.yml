@@ -12,7 +12,9 @@ services:
       - mongo
 
   agendash:
-    build: ./Dockerfile.agendash 
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.agendash  
     environment:
       - DB_NAME=agenda
       - DB_HOST=mongo
