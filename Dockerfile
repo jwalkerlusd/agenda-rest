@@ -1,6 +1,6 @@
 FROM node:latest
 
-RUN npm install -g agenda-rest
+RUN npm install -g jwalkerlusd/agenda-rest
 
 #expose
 EXPOSE 4040
