@@ -38,7 +38,7 @@ if (program.agenda_settings) {
   settings.agenda = JSON.parse(program.agenda_settings);
 }
 
-const { app, agenda } = require("./dist");
+const { app, agenda } = require("./src");
 
 const http = require('http');
 const http_server = http.createServer(app.callback()).listen(settings.httpport, () => {

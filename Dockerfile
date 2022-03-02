@@ -1,5 +1,7 @@
 FROM node:latest
 
+WORKDIR /agenda-rest
+
 RUN npm install -g jwalkerlusd/agenda-rest
 
 #expose
