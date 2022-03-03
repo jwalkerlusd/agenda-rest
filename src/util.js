@@ -1,9 +1,9 @@
-import Koa from "koa";
-import logger from "koa-logger";
-import Router from "koa-router";
-import bodyParser from "koa-bodyparser";
-import { items } from "pythonic";
-import querystring from "querystring";
+const Koa = require("koa");
+const logger = require("koa-logger");
+const Router = require("koa-router");
+const bodyParser = require("koa-bodyparser");
+const { items } = require("pythonic");
+const querystring = require("querystring");
 
 const bootstrapKoaApp = () => {
   const app = new Koa();
@@ -97,7 +97,7 @@ const buildUrlWithQuery = ({ url, query }) => {
   return url;
 };
 
-export {
+module.exports = {
   bootstrapKoaApp,
   isValidDate,
   oncePerKey,
