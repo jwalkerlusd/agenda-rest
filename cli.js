@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const program = require("commander");
+const commander = require("commander");
+const fs = require("fs");
 
-program
+commander
   .option("-u, --dburi <dburi>", "[optional] Full Mongo connection string")
   .option("-d, --dbname <dbname>", "[optional] Name of the Mongo database")
   .option("-h, --dbhost <dbhost>", "[optional] Mongo instance's IP")
@@ -23,22 +24,26 @@ program
   .option("--servercertpass <servercertpass>", "[optional] Passphrase to unlock server certificate")
   .parse(process.argv);
 
+const options = commander.opts();
+
 const settings = require("./settings");
 
-settings.dburi = program.dburi || settings.dburi;
-settings.dbname = program.dbname || settings.dbname;
-settings.dbhost = program.dbhost || settings.dbhost;
-settings.appId = program.key || settings.appId;
-settings.httpport = program.httpport || settings.httpport;
-settings.httpsport = program.httpsport || settings.httpsport;
-settings.timeout = program.timeout || settings.timeout;
-settings.servercertpath = program.servercertpath || settings.servercertpath;
-settings.servercertpass = program.servercertpass || settings.servercertpass;
-if (program.agenda_settings) {
-  settings.agenda = JSON.parse(program.agenda_settings);
+settings.dburi = options.dburi || settings.dburi;
+settings.dbname = options.dbname || settings.dbname;
+settings.dbhost = options.dbhost || settings.dbhost;
+settings.appId = options.key || settings.appId;
+settings.httpport = options.httpport || settings.httpport;
+settings.httpsport = options.httpsport || settings.httpsport;
+settings.timeout = options.timeout || settings.timeout;
+settings.servercertpath = options.servercertpath || settings.servercertpath;
+settings.servercertpass = options.servercertpass || settings.servercertpass;
+if (options.agenda_settings) {
+  settings.agenda = JSON.parse(options.agenda_settings);
 }
 
-const { app, agenda } = require("./dist");
+console.log(Object.assign({}, options));
+
+const { app, agenda } = require("./src");
 
 const http = require('http');
 const http_server = http.createServer(app.callback()).listen(settings.httpport, () => {
@@ -55,7 +60,7 @@ if (settings.servercertpath) {
   });
 }
 
-if (https_options.pfx && https_options.passphrase) {
+if (https_options.pfx) {
   const https = require('https');
   https_server = https.createServer(https_options, app.callback()).listen(settings.httpsport, () => {
     console.log(`App listening on port ${settings.httpsport}.`);

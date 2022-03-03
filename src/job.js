@@ -1,6 +1,6 @@
-import rp from "request-promise";
-import settings from "../settings";
-import { isValidDate, buildUrlWithParams, buildUrlWithQuery } from "./util";
+const rp = require("request-promise");
+const settings = require("../settings");
+const { isValidDate, buildUrlWithParams, buildUrlWithQuery } = require("./util");
 
 const getCheckJobFormatFunction = (jobProperty, defaultJob = {}) => (job) => {
   if (!job.name || (jobProperty && !job[jobProperty])) {
@@ -185,4 +185,4 @@ const promiseJobOperation = async (
   return jobOperation.fn(job, jobs, agenda);
 };
 
-export { promiseJobOperation, jobOperations, jobAssertions, defineJob };
+module.exports = { promiseJobOperation, jobOperations, jobAssertions, defineJob };

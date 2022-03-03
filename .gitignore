@@ -144,3 +144,9 @@ $RECYCLE.BIN/
 
 ### VisualStudioCode ###
 .vscode/
+
+# SSL Certificate Stuff
+*.crt
+*.csr
+*.key
+*.pfx
