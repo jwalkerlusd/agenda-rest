@@ -1,5 +1,5 @@
-const rp = require("request-promise");
-const settings = require("../settings");
+// const rp = require("request-promise");
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));const settings = require("../settings");
 const { isValidDate, buildUrlWithParams, buildUrlWithQuery } = require("./util");
 
 const getCheckJobFormatFunction = (jobProperty, defaultJob = {}) => (job) => {
@@ -46,10 +46,8 @@ const defineJob = async (job, jobs, agenda) => {
 
     const options = {
       method: method || "POST",
-      uri,
       body: data.body,
       headers: data.headers || {},
-      json: true,
     };
 
     // Error if no response in timeout
@@ -57,20 +55,18 @@ const defineJob = async (job, jobs, agenda) => {
       new Promise((resolve, reject) =>
         setTimeout(() => reject(new Error("TimeOutError")), settings.timeout)
       ),
-      rp(options),
+      fetch(uri, options),
     ])
       .catch((err) => {
-        job.fail(`options: ${JSON.stringify(options)} message: ${err.message}`);
+        job.fail(`uri: ${uri} options: ${JSON.stringify(options)} message: ${err.message}`);
         return { error: err.message };
       })
       .then((result) => {
         if (callback) {
-          return rp({
+          return fetch(callback.url, {
             method: callback.method || "POST",
-            uri: callback.url,
             headers: callback.headers || {},
             body: { data, response: result },
-            json: true,
           });
         }
       })
