@@ -56,6 +56,18 @@ const settings = {
   set appId(value) {
     appId = value;
   },
+  get httpport() {
+    return httpport;
+  },
+  set httpport(value) {
+    httpport = value;
+  },
+  get httpsport() {
+    return httpsport;
+  },
+  set httpsport(value) {
+    httpsport = value;
+  },
   get servercertpfx() {
     return servercertpfx;
   },
