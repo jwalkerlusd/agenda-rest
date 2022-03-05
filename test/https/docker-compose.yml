@@ -1,0 +1,45 @@
+version: '2'
+services:
+  agenda-rest:
+    build:
+      context: ../../
+      dockerfile: ./test/Dockerfile
+    environment:
+      - DB_HOST=mongo
+      - SERVER_CERT_PFX_PATH=/certs/domain.pfx
+      - CA_ROOT_CERT_PATH=/certs/ca.crt
+    volumes:
+      - ./:/certs
+    ports:
+      - "443:443"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+      - httpd
+
+  agendash:
+    build:
+      context: ../
+      dockerfile: Dockerfile.agendash  
+    environment:
+      - DB_NAME=agenda
+      - DB_HOST=mongo
+    ports:
+      - "3022:3022"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+
+  mongo:
+    image: mongo
+    volumes:
+      - ../db:/data/db
+    expose:
+      - "27017"
+
+  httpd:
+    build:
+      context: ./
+      dockerfile: Dockerfile.httpd

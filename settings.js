@@ -2,10 +2,11 @@ let dbname = process.env.DB_NAME || "agenda";
 let dbhost = process.env.DB_HOST || "localhost";
 let dburi = process.env.DB_URI || null;
 let appId = process.env.API_KEY;
-let httpport = process.env.HTTP_PORT;
-let httpsport = process.env.HTTPS_PORT;
-let servercertpfx = process.env.SERVER_CERT_PFX;
+let httpport = process.env.HTTP_PORT || 80;
+let httpsport = process.env.HTTPS_PORT || 443;
+let servercertpfxpath = process.env.SERVER_CERT_PFX_PATH;
 let servercertpfxpass = process.env.SERVER_CERT_PFX_PASS;
+let carootcertpath = process.env.CA_ROOT_CERT_PATH;
 let collection = "agendaJobs";
 let definitions = "jobDefinitions";
 let timeout = 5000;
@@ -68,17 +69,23 @@ const settings = {
   set httpsport(value) {
     httpsport = value;
   },
-  get servercertpfx() {
-    return servercertpfx;
+  get servercertpfxpath() {
+    return servercertpfxpath;
   },
-  set servercertpfx(value) {
-    servercertpfx = value;
+  set servercertpfxpath(value) {
+    servercertpfxpath = value;
   },
   get servercertpfxpass() {
     return servercertpfxpass;
   },
   set servercertpfxpass(value) {
     servercertpfxpass = value;
+  },
+  get carootcertpath() {
+    return carootcertpath;
+  },
+  set carootcertpath(value) {
+    carootcertpath = value;
   }
 };
 

@@ -150,3 +150,7 @@ $RECYCLE.BIN/
 *.csr
 *.key
 *.pfx
+*.pem
+*.srl
+*.ext
+test/db/

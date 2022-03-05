@@ -42,6 +42,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-logger": "^3.2.1",
     "koa-router": "^10.0.0",
+    "node-fetch": "^3.2.1",
     "pythonic": "^2.0.3"
   },
   "engines": {

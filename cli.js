@@ -7,8 +7,8 @@ commander
   .option("-u, --dburi <dburi>", "[optional] Full Mongo connection string")
   .option("-d, --dbname <dbname>", "[optional] Name of the Mongo database")
   .option("-h, --dbhost <dbhost>", "[optional] Mongo instance's IP")
-  .option("--httpport <httpport>", "[optional] HTTP listening port, default 80", (n, d) => Number(n) || d, 80)
-  .option("--httpsport <httpsport>", "[optional] HTTPS listening port, default 443", (n, d) => Number(n) || d, 443)
+  .option("--httpport <httpport>", "[optional] HTTP listening port, default 80")
+  .option("--httpsport <httpsport>", "[optional] HTTPS listening port, default 443")
   .option("-k, --key <key>", "[optional] X-API-KEY to be expected in headers")
   .option(
     "-t, --timeout <timeout>",
@@ -20,8 +20,9 @@ commander
     "-a, --agenda_settings <agenda_settings>",
     "[optional] A JSON string containing additional agenda settings."
   )
-  .option("--servercertpath <servercertpath>", "[optional] Path to server certificate (PFX) file")
-  .option("--servercertpass <servercertpass>", "[optional] Passphrase to unlock server certificate")
+  .option("--servercertpfxpath <servercertpfxpath>", "[optional] Path to server certificate (PFX) file")
+  .option("--servercertpfxpass <servercertpfxpass>", "[optional] Passphrase to unlock server certificate")
+  .option("--carootcertpath <carootcertpath>", "[optional] Path to Root CA Certificate (PEM) file")
   .parse(process.argv);
 
 const options = commander.opts();
@@ -35,13 +36,13 @@ settings.appId = options.key || settings.appId;
 settings.httpport = options.httpport || settings.httpport;
 settings.httpsport = options.httpsport || settings.httpsport;
 settings.timeout = options.timeout || settings.timeout;
-settings.servercertpath = options.servercertpath || settings.servercertpath;
-settings.servercertpass = options.servercertpass || settings.servercertpass;
+settings.servercertpfxpath = options.servercertpfxpath || settings.servercertpfxpath;
+settings.servercertpfxpass = options.servercertpfxpass || settings.servercertpfxpass;
+settings.carootcertpath = options.carootcertpath || settings.carootcertpath;
+
 if (options.agenda_settings) {
   settings.agenda = JSON.parse(options.agenda_settings);
 }
-
-console.log(Object.assign({}, options));
 
 const { app, agenda } = require("./src");
 
@@ -53,11 +54,9 @@ const http_server = http.createServer(app.callback()).listen(settings.httpport, 
 var https_server = undefined;
 var https_options = {};
 
-if (settings.servercertpath) {
-  Object.assign(https_options, {
-    pfx: fs.readFileSync(settings.servercertpath),
-    passphrase: settings.servercertpass
-  });
+if (settings.servercertpfxpath) {
+  https_options.pfx = fs.readFileSync(settings.servercertpfxpath);
+  https_options.passphrase = settings.servercertpfxpass;
 }
 
 if (https_options.pfx) {
