@@ -144,3 +144,13 @@ $RECYCLE.BIN/
 
 ### VisualStudioCode ###
 .vscode/
+
+# SSL Certificate Stuff
+*.crt
+*.csr
+*.key
+*.pfx
+*.pem
+*.srl
+*.ext
+test/db/

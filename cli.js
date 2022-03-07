@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-const program = require("commander");
+const commander = require("commander");
+const fs = require("fs");
 
-program
+commander
   .option("-u, --dburi <dburi>", "[optional] Full Mongo connection string")
   .option("-d, --dbname <dbname>", "[optional] Name of the Mongo database")
   .option("-h, --dbhost <dbhost>", "[optional] Mongo instance's IP")
-  .option("--httpport <httpport>", "[optional] HTTP listening port, default 80", (n, d) => Number(n) || d, 80)
-  .option("--httpsport <httpsport>", "[optional] HTTPS listening port, default 443", (n, d) => Number(n) || d, 443)
+  .option("--httpport <httpport>", "[optional] HTTP listening port, default 80")
+  .option("--httpsport <httpsport>", "[optional] HTTPS listening port, default 443")
   .option("-k, --key <key>", "[optional] X-API-KEY to be expected in headers")
   .option(
     "-t, --timeout <timeout>",
@@ -19,26 +20,31 @@ program
     "-a, --agenda_settings <agenda_settings>",
     "[optional] A JSON string containing additional agenda settings."
   )
-  .option("--servercertpath <servercertpath>", "[optional] Path to server certificate (PFX) file")
-  .option("--servercertpass <servercertpass>", "[optional] Passphrase to unlock server certificate")
+  .option("--servercertpfxpath <servercertpfxpath>", "[optional] Path to server certificate (PFX) file")
+  .option("--servercertpfxpass <servercertpfxpass>", "[optional] Passphrase to unlock server certificate")
+  .option("--carootcertpath <carootcertpath>", "[optional] Path to Root CA Certificate (PEM) file")
   .parse(process.argv);
+
+const options = commander.opts();
 
 const settings = require("./settings");
 
-settings.dburi = program.dburi || settings.dburi;
-settings.dbname = program.dbname || settings.dbname;
-settings.dbhost = program.dbhost || settings.dbhost;
-settings.appId = program.key || settings.appId;
-settings.httpport = program.httpport || settings.httpport;
-settings.httpsport = program.httpsport || settings.httpsport;
-settings.timeout = program.timeout || settings.timeout;
-settings.servercertpath = program.servercertpath || settings.servercertpath;
-settings.servercertpass = program.servercertpass || settings.servercertpass;
-if (program.agenda_settings) {
-  settings.agenda = JSON.parse(program.agenda_settings);
+settings.dburi = options.dburi || settings.dburi;
+settings.dbname = options.dbname || settings.dbname;
+settings.dbhost = options.dbhost || settings.dbhost;
+settings.appId = options.key || settings.appId;
+settings.httpport = options.httpport || settings.httpport;
+settings.httpsport = options.httpsport || settings.httpsport;
+settings.timeout = options.timeout || settings.timeout;
+settings.servercertpfxpath = options.servercertpfxpath || settings.servercertpfxpath;
+settings.servercertpfxpass = options.servercertpfxpass || settings.servercertpfxpass;
+settings.carootcertpath = options.carootcertpath || settings.carootcertpath;
+
+if (options.agenda_settings) {
+  settings.agenda = JSON.parse(options.agenda_settings);
 }
 
-const { app, agenda } = require("./dist");
+const { app, agenda } = require("./src");
 
 const http = require('http');
 const http_server = http.createServer(app.callback()).listen(settings.httpport, () => {
@@ -48,14 +54,12 @@ const http_server = http.createServer(app.callback()).listen(settings.httpport, 
 var https_server = undefined;
 var https_options = {};
 
-if (settings.servercertpath) {
-  Object.assign(https_options, {
-    pfx: fs.readFileSync(settings.servercertpath),
-    passphrase: settings.servercertpass
-  });
+if (settings.servercertpfxpath) {
+  https_options.pfx = fs.readFileSync(settings.servercertpfxpath);
+  https_options.passphrase = settings.servercertpfxpass;
 }
 
-if (https_options.pfx && https_options.passphrase) {
+if (https_options.pfx) {
   const https = require('https');
   https_server = https.createServer(https_options, app.callback()).listen(settings.httpsport, () => {
     console.log(`App listening on port ${settings.httpsport}.`);

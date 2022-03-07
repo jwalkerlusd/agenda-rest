@@ -1,13 +1,13 @@
-import { promisify } from "util";
-import Agenda from "agenda";
-import settings from "../settings";
-import { bootstrapKoaApp } from "./util";
-import {
+const { promisify } = require("util");
+const Agenda = require("agenda");
+const settings = require("../settings");
+const { bootstrapKoaApp } = require("./util");
+const {
   defineJob,
   jobOperations,
   jobAssertions,
   promiseJobOperation,
-} from "./job";
+} = require("./job");
 
 const { app, router } = bootstrapKoaApp();
 
@@ -125,5 +125,4 @@ router.post("/api/v1/job/every", redirect("/api/job/every"));
 router.post("/api/v1/job/now", redirect("/api/job/now"));
 router.post("/api/v1/job/cancel", redirect("/api/job/cancel"));
 
-export { app, router, agenda, jobsReady };
-export default app;
+module.exports = { app, router, agenda, jobsReady };

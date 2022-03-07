@@ -1,12 +1,43 @@
-import rp from "request-promise";
-import settings from "../settings";
-import { isValidDate, buildUrlWithParams, buildUrlWithQuery } from "./util";
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const http = require("http");
+const https = require("https");
+const tls = require("tls");
+const fs = require("fs");
+const { isValidDate, buildUrlWithParams, buildUrlWithQuery } = require("./util");
+const settings = require("../settings");
+
+var carootcert = undefined;
+
+if (settings.carootcertpath) {
+  carootcert = fs.readFileSync(settings.carootcertpath);
+}
+
+const httpAgent = new http.Agent({
+  keepAlive: true
+});
+var httpsAgent = undefined;
+if (carootcert) {
+  httpsAgent = new https.Agent({
+    keepAlive: true,
+    // prepend custom ca root certificate to default root certificates
+    ca: [carootcert, ...tls.rootCertificates]
+  });
+}
+
+const agentForProtocol = (_parsedURL) => {
+  switch (_parsedURL.protocol) {
+    case 'http:':
+      return httpAgent;
+    case 'https:':
+      if (httpsAgent)
+        return httpsAgent;
+  }
+}
 
 const getCheckJobFormatFunction = (jobProperty, defaultJob = {}) => (job) => {
   if (!job.name || (jobProperty && !job[jobProperty])) {
     throw new Error(
-      `expected request body to match {name${
-        jobProperty ? `, ${jobProperty}` : ""
+      `expected request body to match {name${jobProperty ? `, ${jobProperty}` : ""
       }}`
     );
   }
@@ -44,12 +75,11 @@ const defineJob = async (job, jobs, agenda) => {
     let uri = buildUrlWithParams({ url, params: data.params });
     uri = buildUrlWithQuery({ url: uri, query: data.query });
 
-    const options = {
+    const job_fetch_options = {
+      agent: agentForProtocol,
       method: method || "POST",
-      uri,
       body: data.body,
       headers: data.headers || {},
-      json: true,
     };
 
     // Error if no response in timeout
@@ -57,21 +87,21 @@ const defineJob = async (job, jobs, agenda) => {
       new Promise((resolve, reject) =>
         setTimeout(() => reject(new Error("TimeOutError")), settings.timeout)
       ),
-      rp(options),
+      fetch(uri, job_fetch_options),
     ])
       .catch((err) => {
-        job.fail(`options: ${JSON.stringify(options)} message: ${err.message}`);
+        job.fail(`uri: ${uri} options: ${JSON.stringify(job_fetch_options)} message: ${err.message}`);
         return { error: err.message };
       })
       .then((result) => {
         if (callback) {
-          return rp({
+          const callback_fetch_options = {
+            agent: agentForProtocol,
             method: callback.method || "POST",
-            uri: callback.url,
             headers: callback.headers || {},
             body: { data, response: result },
-            json: true,
-          });
+          };
+          return fetch(callback.url, callback_fetch_options);
         }
       })
       .catch((err) => job.fail(`failure in callback: ${err.message}`))
@@ -185,4 +215,4 @@ const promiseJobOperation = async (
   return jobOperation.fn(job, jobs, agenda);
 };
 
-export { promiseJobOperation, jobOperations, jobAssertions, defineJob };
+module.exports = { promiseJobOperation, jobOperations, jobAssertions, defineJob };
