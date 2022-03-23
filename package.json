@@ -32,9 +32,9 @@
     "agenda-rest": "cli.js"
   },
   "bugs": {
-    "url": "https://github.com/agenda/agenda-rest/issues"
+    "url": "https://github.com/jwalkerlusd/agenda-rest/issues"
   },
-  "homepage": "https://github.com/agenda/agenda-rest#README",
+  "homepage": "https://github.com/jwalkerlusd/agenda-rest#README",
   "dependencies": {
     "agenda": "^4.0.0",
     "commander": "^9.0.0",
