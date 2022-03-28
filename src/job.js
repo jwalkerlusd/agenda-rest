@@ -158,7 +158,7 @@ const scheduleTypes = {
       //    - ingested as Agenda.schedule(interval)
       //  - interval may also be a String in the format produced by Date.toJSON()
       //    - ingested as new Date(interval)
-      // FOR NOW assumes String, injestible by date.js (https://github.com/MatthewMueller/date)
+      // FOR NOW assumes String, ingestible by date.js (https://github.com/MatthewMueller/date)
       return pickValues({
         obj: { ...job },
         pickProps: ["interval", "name", "data"],
