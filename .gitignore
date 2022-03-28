@@ -146,6 +146,7 @@ $RECYCLE.BIN/
 .vscode/
 
 # SSL Certificate Stuff
+*.cer
 *.crt
 *.csr
 *.key

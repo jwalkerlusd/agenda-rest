@@ -5,7 +5,7 @@ services:
     environment:
       - DB_HOST=mongo
     ports:
-      - "4040:4040"
+      - "4040:80"
     depends_on:
       - mongo
     links:

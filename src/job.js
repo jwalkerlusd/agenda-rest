@@ -151,15 +151,17 @@ const scheduleTypes = {
     fn: (agenda) => agenda.schedule.bind(agenda),
     message: "for once",
     getParams: (job) => {
-      // Check if interval is timestamp
-      let time = parseInt(job.interval, 10);
-      time = isNaN(time) ? job.interval : time;
-      // Check if interval is date
-      time = new Date(time);
-      time = isValidDate(time) ? time : job.interval;
+      // TODO convert interval to Date or String
+      //  - interval may be a Number, indicating a timestamp in seconds since Epoch
+      //    - injested as new Date().setTime(interval)
+      //  - interval may also be a human-readable String per date.js
+      //    - ingested as Agenda.schedule(interval)
+      //  - interval may also be a String in the format produced by Date.toJSON()
+      //    - ingested as new Date(interval)
+      // FOR NOW assumes String, injestible by date.js (https://github.com/MatthewMueller/date)
       return pickValues({
-        obj: { ...job, time },
-        pickProps: ["time", "name", "data"],
+        obj: { ...job },
+        pickProps: ["interval", "name", "data"],
       });
     },
   },

@@ -2,27 +2,31 @@ version: '2'
 services:
   agenda-rest:
     build:
-      context: ../
-      dockerfile: test/Dockerfile
+      context: ../../
+      dockerfile: test/debug/Dockerfile
     environment:
+      - TZ=America/Los_Angeles
       - DB_HOST=mongo
+      - CA_ROOT_CERT_PATH=/devcon1-dnode2-home/admin/projects/agenda-rest/test/certs/ca.cer
     ports:
       - "8000:80"
+      - "8229:9229"
+    volumes:
+      - devcon1-dnode2-home:/devcon1-dnode2-home
     depends_on:
       - mongo
     links:
       - mongo
-      - httpd
 
   agendash:
     build:
-      context: ./
+      context: ../
       dockerfile: Dockerfile.agendash  
     environment:
       - DB_NAME=agenda
       - DB_HOST=mongo
     ports:
-      - "3022:3022"
+      - "8022:3022"
     depends_on:
       - mongo
     links:
@@ -31,11 +35,11 @@ services:
   mongo:
     image: mongo
     volumes:
-      - ./db:/data/db
+      - mongo:/data/db
     expose:
       - "27017"
 
-  httpd:
-    build:
-      context: ./
-      dockerfile: Dockerfile.httpd
+volumes:
+  mongo:
+  devcon1-dnode2-home:
+    external: true

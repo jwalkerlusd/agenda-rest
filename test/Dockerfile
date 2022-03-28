@@ -7,6 +7,6 @@ COPY . .
 RUN npm install -g
 
 #expose
-EXPOSE 4040
+EXPOSE 80
 
-CMD agenda-rest
+CMD ["agenda-rest"]
